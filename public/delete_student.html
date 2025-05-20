@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delete Student</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .button-container {
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+      }
+      .form-container {
+        margin-top: 2rem;
+      }
+      .alert {
+        display: none;
+        margin-top: 1rem;
+      }
+      .select-container {
+        margin-bottom: 2rem;
+      }
+      .select2-container {
+        width: 100% !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <br />
+      <h2 class="text-center mb-4">Delete Student</h2>
+
+      <div class="select-container">
+        <label for="studentSelect" class="form-label">Select Student:</label>
+        <select class="form-select" id="studentSelect">
+          <option value="">Choose a student...</option>
+        </select>
+      </div>
+
+      <div class="form-container">
+        <form id="deleteForm" onsubmit="deleteStudent(event)">
+          <div class="button-container d-grid gap-2">
+            <button
+              type="submit"
+              class="btn btn-danger"
+            >
+              Delete Student
+            </button>
+            <a href="index.html" class="btn btn-secondary">Back To Home</a>
+          </div>
+          <div id="errorAlert" class="alert alert-danger mt-3" role="alert">
+            Failed to delete student. Please try again.
+          </div>
+          <div id="successAlert" class="alert alert-success mt-3" role="alert">
+            Student deleted successfully!
+          </div>
+        </form>
+      </div>
+      <br />
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="config.js"></script>
+    <script>
+      // Initialize Select2 for student dropdown
+      $(document).ready(function () {
+        $("#studentSelect").select2({
+          theme: "bootstrap-5",
+          placeholder: "Search for a student...",
+          allowClear: true,
+          width: "100%",
+        });
+      });
+
+      // Load students into select dropdown when page loads
+      window.onload = async function () {
+        try {
+          console.log("Fetching all students...");
+          const response = await fetch(
+            `${config.getBaseUrl()}/student/allstud`,
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                Accept: "application/json"
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch students: ${response.status} ${response.statusText}`
+            );
+          }
+
+          const students = await response.json();
+          const select = $("#studentSelect");
+
+          // Sort students by name
+          students.sort((a, b) => a.name.localeCompare(b.name));
+
+          students.forEach((student) => {
+            const option = new Option(
+              `${student.name} (${student.school_id})`,
+              student.id,
+              false,
+              false
+            );
+            select.append(option);
+          });
+
+          select.trigger("change");
+        } catch (error) {
+          console.error("Error loading students:", error);
+          const errorAlert = document.getElementById("errorAlert");
+          errorAlert.textContent = `Failed to load student list: ${error.message}. Please refresh the page.`;
+          errorAlert.style.display = "block";
+        }
+      };
+
+      async function deleteStudent(event) {
+        event.preventDefault();
+
+        const errorAlert = document.getElementById("errorAlert");
+        const successAlert = document.getElementById("successAlert");
+
+        const studentSelect = document.getElementById("studentSelect");
+        const schoolId = studentSelect.value;
+
+        if (!schoolId) {
+          errorAlert.textContent = "Please select a student to delete.";
+          errorAlert.style.display = "block";
+          successAlert.style.display = "none";
+          return;
+        }
+
+        if (!confirm("Are you sure you want to delete this student? This action cannot be undone.")) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${config.getBaseUrl()}/student/delstud`, {
+            method: "DELETE",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({ id: schoolId }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to delete student: ${response.status} ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          successAlert.textContent = "Student deleted successfully!";
+          successAlert.style.display = "block";
+          errorAlert.style.display = "none";
+          document.getElementById("deleteForm").reset();
+        } catch (error) {
+          console.error("Error deleting student:", error);
+          errorAlert.textContent = `Failed to delete student: ${error.message}`;
+          errorAlert.style.display = "block";
+          successAlert.style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>

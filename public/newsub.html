@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create New Subject</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .alert {
+        display: none;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="form-container">
+        <h2 class="text-center mb-4">Create New Subject</h2>
+        <form id="newSubjectForm" onsubmit="return handleSubmit(event)">
+          <div class="mb-3">
+            <label for="subject_code" class="form-label">Subject Code</label>
+            <input
+              type="text"
+              class="form-control"
+              id="subject_code"
+              name="subject_code"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="subject_name" class="form-label">Subject Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="subject_name"
+              name="subject_name"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="subject_units" class="form-label">Units</label>
+            <input
+              type="number"
+              class="form-control"
+              id="subject_units"
+              name="subject_units"
+              min="1"
+              max="6"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="subject_course" class="form-label">Course</label>
+            <input
+              type="text"
+              class="form-control"
+              id="subject_course"
+              name="subject_course"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="subject_studentyear" class="form-label"
+              >Year Level</label
+            >
+            <select
+              class="form-select"
+              id="subject_studentyear"
+              name="subject_studentyear"
+              required
+            >
+              <option value="">Select Year Level</option>
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
+              <option value="4">4th Year</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="subject_studentsemester" class="form-label"
+              >Semester</label
+            >
+            <select
+              class="form-select"
+              id="subject_studentsemester"
+              name="subject_studentsemester"
+              required
+            >
+              <option value="">Select Semester</option>
+              <option value="1">1st Semester</option>
+              <option value="2">2nd Semester</option>
+            </select>
+          </div>
+          <br />
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">
+              Create Subject
+            </button>
+            <a href="index.html" class="btn btn-secondary">Back to Home</a>
+          </div>
+        </form>
+        <div id="successAlert" class="alert alert-success" role="alert">
+          Subject created successfully!
+        </div>
+        <div id="errorAlert" class="alert alert-danger" role="alert">
+          Error creating subject. Please try again.
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="config.js"></script>
+    <script>
+      // Handle form submission
+      async function handleSubmit(event) {
+        event.preventDefault();
+        const successAlert = document.getElementById("successAlert");
+        const errorAlert = document.getElementById("errorAlert");
+
+        const formData = {
+          subject_code: document.getElementById("subject_code").value,
+          subject_name: document.getElementById("subject_name").value,
+          subject_units: document.getElementById("subject_units").value,
+          subject_course: document.getElementById("subject_course").value,
+          subject_studentyear: document.getElementById("subject_studentyear").value,
+          subject_studentsemester: document.getElementById("subject_studentsemester").value,
+        };
+
+        try {
+          const response = await fetch(`${config.getBaseUrl()}/subject/newsub`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json"
+            },
+            body: JSON.stringify(formData),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to create subject: ${response.status} ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          successAlert.textContent = "Subject created successfully!";
+          successAlert.style.display = "block";
+          errorAlert.style.display = "none";
+          document.getElementById("newSubjectForm").reset();
+        } catch (error) {
+          console.error("Error creating subject:", error);
+          errorAlert.textContent = `Failed to create subject: ${error.message}`;
+          errorAlert.style.display = "block";
+          successAlert.style.display = "none";
+        }
+        return false; // Additional prevention of form submission
+      }
+    </script>
+  </body>
+</html>

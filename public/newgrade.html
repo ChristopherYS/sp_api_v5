@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Student Grade</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .alert {
+        display: none;
+        margin-top: 1rem;
+      }
+      .select2-container {
+        width: 100% !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="form-container">
+        <h2 class="text-center mb-4">Add Student Grade</h2>
+        <form id="newGradeForm" onsubmit="return handleSubmit(event)">
+          <div class="mb-3">
+            <label for="student_id" class="form-label">Student</label>
+            <select
+              class="form-select select2"
+              id="student_id"
+              name="student_id"
+              required
+            >
+              <option value="">Select Student</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="subject_id" class="form-label">Subject</label>
+            <select
+              class="form-select select2"
+              id="subject_id"
+              name="subject_id"
+              required
+            >
+              <option value="">Select Subject</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="subject_grades" class="form-label">Grade</label>
+            <input
+              type="number"
+              class="form-control"
+              id="subject_grades"
+              name="subject_grades"
+              step="0.01"
+              min="0"
+              max="100"
+              required
+            />
+          </div>
+          <br />
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">Add Grade</button>
+            <a href="index.html" class="btn btn-secondary">Back to Home</a>
+          </div>
+        </form>
+        <div id="successAlert" class="alert alert-success" role="alert">
+          Grade added successfully!
+        </div>
+        <div id="errorAlert" class="alert alert-danger" role="alert">
+          Error adding grade. Please try again.
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="config.js"></script>
+    <script>
+      // Initialize Select2 for dropdowns
+      $(document).ready(function () {
+        $("#student_id").select2({
+          theme: "bootstrap-5",
+          placeholder: "Search for a student...",
+          allowClear: true,
+          width: "100%",
+        });
+
+        $("#subject_id").select2({
+          theme: "bootstrap-5",
+          placeholder: "Search for a subject...",
+          allowClear: true,
+          width: "100%",
+        });
+      });
+
+      // Load students into select dropdown when page loads
+      window.onload = async function () {
+        try {
+          console.log("Fetching all students...");
+          const response = await fetch(
+            `${config.getBaseUrl()}/student/allstud`,
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                Accept: "application/json",
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch students: ${response.status} ${response.statusText}`
+            );
+          }
+
+          const students = await response.json();
+          const select = $("#student_id");
+
+          // Sort students by name
+          students.sort((a, b) => a.name.localeCompare(b.name));
+
+          students.forEach((student) => {
+            const option = new Option(
+              `${student.name} (${student.school_id})`,
+              student.id,
+              false,
+              false
+            );
+            select.append(option);
+          });
+
+          select.trigger("change");
+
+          // Fetch subjects
+          console.log("Fetching all subjects...");
+          const subjectResponse = await fetch(
+            `${config.getBaseUrl()}/subject/allsub`,
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                Accept: "application/json",
+              },
+            }
+          );
+
+          if (!subjectResponse.ok) {
+            throw new Error(
+              `Failed to fetch subjects: ${subjectResponse.status} ${subjectResponse.statusText}`
+            );
+          }
+
+          const subjects = await subjectResponse.json();
+          const subjectSelect = $("#subject_id");
+
+          // Sort subjects by name
+          subjects.sort((a, b) => a.subject_name.localeCompare(b.subject_name));
+
+          subjects.forEach((subject) => {
+            const option = new Option(
+              `${subject.subject_name} (${subject.subject_code})`,
+              subject.id,
+              false,
+              false
+            );
+            subjectSelect.append(option);
+          });
+
+          subjectSelect.trigger("change");
+        } catch (error) {
+          console.error("Error loading data:", error);
+          const errorAlert = document.getElementById("errorAlert");
+          errorAlert.textContent = `Failed to load data: ${error.message}. Please refresh the page.`;
+          errorAlert.style.display = "block";
+        }
+      };
+
+      async function handleSubmit(event) {
+        event.preventDefault();
+        const successAlert = document.getElementById("successAlert");
+        const errorAlert = document.getElementById("errorAlert");
+
+        const formData = {
+          student_id: document.getElementById("student_id").value,
+          subject_id: document.getElementById("subject_id").value,
+          subject_grades: document.getElementById("subject_grades").value,
+        };
+
+        try {
+          console.log("Submitting grade...");
+          const response = await fetch(
+            `${config.getBaseUrl()}/subject/addstudgrades`,
+            {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+              },
+              body: JSON.stringify(formData),
+            }
+          );
+
+          console.log("Response status:", response.status);
+          const data = await response.json();
+          console.log("Response data:", data);
+
+          if (response.ok) {
+            // Reset form and show success message
+            document.getElementById("newGradeForm").reset();
+            // Reset Select2 dropdowns
+            $("#student_id, #subject_id").val("").trigger("change");
+            successAlert.style.display = "block";
+            errorAlert.style.display = "none";
+            setTimeout(() => {
+              successAlert.style.display = "none";
+            }, 3000);
+          } else {
+            throw new Error(
+              data.message ||
+                `Failed to add grade: ${response.status} ${response.statusText}`
+            );
+          }
+        } catch (error) {
+          console.error("Error submitting grade:", error);
+          console.error("Error details:", {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          });
+          errorAlert.textContent =
+            error.message || "Error adding grade. Please try again.";
+          errorAlert.style.display = "block";
+          successAlert.style.display = "none";
+        }
+        return false; // Additional prevention of form submission
+      }
+    </script>
+  </body>
+</html>

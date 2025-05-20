@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Registrar Information</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .button-container {
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+      }
+      .form-container {
+        margin-top: 2rem;
+      }
+      .alert {
+        display: none;
+        margin-top: 1rem;
+      }
+      .select-container {
+        margin-bottom: 2rem;
+      }
+      .select2-container {
+        width: 100% !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <br />
+      <h2 class="text-center mb-4">Update Registrar Information</h2>
+
+      <div class="select-container">
+        <label for="registrarSelect" class="form-label"
+          >Select Registrar:</label
+        >
+        <select class="form-select" id="registrarSelect">
+          <option value="">Choose a registrar...</option>
+        </select>
+      </div>
+
+      <div class="form-container">
+        <form id="updateForm" onsubmit="return updateRegistrarInfo(event)">
+          <div class="mb-3">
+            <label for="schoolId" class="form-label">School ID:</label>
+            <input type="text" class="form-control" id="schoolId" required />
+          </div>
+          <div class="mb-3">
+            <label for="name" class="form-label">Name:</label>
+            <input type="text" class="form-control" id="name" required />
+          </div>
+          <div class="mb-3">
+            <label for="emailAddress" class="form-label">Email Address:</label>
+            <input
+              type="email"
+              class="form-control"
+              id="emailAddress"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="address" class="form-label">Address:</label>
+            <input type="text" class="form-control" id="address" />
+          </div>
+          <div class="mb-3">
+            <label for="position" class="form-label">Position:</label>
+            <input type="text" class="form-control" id="position" required />
+          </div>
+          <div class="button-container d-grid gap-2">
+            <button
+              type="submit"
+              class="btn btn-primary"
+            >
+              Update Information
+            </button>
+            <a href="index.html" class="btn btn-secondary">Back To Home</a>
+          </div>
+          <div id="errorAlert" class="alert alert-danger mt-3" role="alert">
+            Failed to update registrar information. Please try again.
+          </div>
+          <div id="successAlert" class="alert alert-success mt-3" role="alert">
+            Registrar information updated successfully!
+          </div>
+        </form>
+      </div>
+      <br />
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="config.js"></script>
+    <script>
+      // Initialize Select2 for registrar dropdown
+      $(document).ready(function () {
+        $("#registrarSelect").select2({
+          theme: "bootstrap-5",
+          placeholder: "Search for a registrar...",
+          allowClear: true,
+          width: "100%"
+        });
+      });
+
+      // Populate form fields when a registrar is selected
+      $("#registrarSelect").on("change", function () {
+        const registrarId = $(this).val();
+        const registrars = window._registrarsList || [];
+        if (!registrarId) {
+          document.getElementById("updateForm").reset();
+          return;
+        }
+        // Find the selected registrar's data from the loaded list
+        var registrar = null;
+        for (var i = 0; i < registrars.length; i++) {
+          if (String(registrars[i].id) === String(registrarId)) {
+            registrar = registrars[i];
+            break;
+          }
+        }
+        if (registrar) {
+          document.getElementById("schoolId").value = registrar.school_id || "";
+          document.getElementById("name").value = registrar.name || "";
+          document.getElementById("emailAddress").value = registrar.email_address || "";
+          document.getElementById("address").value = registrar.address || "";
+          document.getElementById("position").value = registrar.position || "";
+        }
+      });
+
+      // Load registrars into select dropdown when page loads
+      window.onload = async function () {
+        try {
+          console.log("Fetching all registrars...");
+          const response = await fetch(
+            `${config.getBaseUrl()}/registrar/allreg`,
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                Accept: "application/json",
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch registrars: ${response.status} ${response.statusText}`
+            );
+          }
+
+          const registrars = await response.json();
+          const select = $("#registrarSelect");
+
+          // Sort registrars by name
+          registrars.sort((a, b) => a.name.localeCompare(b.name));
+
+          // Store registrars globally for change event access
+          window._registrarsList = registrars;
+
+          registrars.forEach((registrar) => {
+            const option = new Option(
+              `${registrar.name} (${registrar.school_id})`,
+              registrar.id,
+              false,
+              false
+            );
+            select.append(option);
+          });
+
+          select.trigger("change");
+        } catch (error) {
+          console.error("Error loading registrars:", error);
+          const errorAlert = document.getElementById("errorAlert");
+          errorAlert.textContent = `Failed to load registrar list: ${error.message}. Please refresh the page.`;
+          errorAlert.style.display = "block";
+        }
+      };
+
+      async function updateRegistrarInfo(event) {
+        if (event) event.preventDefault();
+        const registrarId = document.getElementById("registrarSelect").value;
+        const name = document.getElementById("name").value;
+        const schoolId = document.getElementById("schoolId").value;
+        const emailAddress = document.getElementById("emailAddress").value;
+        const address = document.getElementById("address").value;
+        const position = document.getElementById("position").value;
+        const errorAlert = document.getElementById("errorAlert");
+        const successAlert = document.getElementById("successAlert");
+
+        if (!registrarId) {
+          errorAlert.textContent = "Please select a registrar.";
+          errorAlert.style.display = "block";
+          return;
+        }
+
+        if (!name || !schoolId) {
+          errorAlert.textContent = "Please fill in all required fields.";
+          errorAlert.style.display = "block";
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `${config.getBaseUrl()}/registrar/${registrarId}/info`,
+            {
+              method: "PUT",
+              credentials: "include",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name: name,
+                school_id: schoolId,
+                email_address: emailAddress,
+                address: address,
+                position: position
+              }),
+            }
+          );
+
+          let data;
+          let responseText = await response.text();
+          try {
+            data = JSON.parse(responseText);
+          } catch {
+            data = { error: responseText };
+          }
+
+          if (response.ok) {
+            errorAlert.style.display = "none";
+            successAlert.style.display = "block";
+            // Reset the form
+            document.getElementById("updateForm").reset();
+            $("#registrarSelect").val("").trigger("change");
+          } else {
+            const errorMessage =
+              data.message ||
+              data.error ||
+              `Server returned ${response.status}: ${response.statusText}`;
+            errorAlert.textContent = errorMessage;
+            errorAlert.style.display = "block";
+            successAlert.style.display = "none";
+          }
+        } catch (error) {
+          errorAlert.textContent =
+            error.message || "Failed to update registrar info. Please try again.";
+          errorAlert.style.display = "block";
+          successAlert.style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,255 @@
+{
+  "info": {
+    "_postman_id": "b1e1e1e1-1234-5678-9101-abcdefabcdef",
+    "name": "Student Profile API",
+    "description": "Postman collection for all endpoints of the Student Profile API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get API Key",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/get-api-key", "host": ["{{baseUrl}}"], "path": ["get-api-key"] }
+      }
+    },
+    {
+      "name": "Registrar",
+      "item": [
+        {
+          "name": "Registrar Login",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"registrar1\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{baseUrl}}/registrar/login", "host": ["{{baseUrl}}"], "path": ["registrar", "login"] }
+          }
+        },
+        {
+          "name": "Create New Registrar",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"school_id\": \"1001\",\n  \"name\": \"Registrar Name\",\n  \"address\": \"Address\",\n  \"email_address\": \"email@example.com\",\n  \"position\": \"Registrar\",\n  \"username\": \"registrar1\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{baseUrl}}/registrar/newreg", "host": ["{{baseUrl}}"], "path": ["registrar", "newreg"] }
+          }
+        },
+        {
+          "name": "Get All Registrars",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "url": { "raw": "{{baseUrl}}/registrar/allreg", "host": ["{{baseUrl}}"], "path": ["registrar", "allreg"] }
+          }
+        },
+        {
+          "name": "Get Registrar by ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "url": { "raw": "{{baseUrl}}/registrar/:id", "host": ["{{baseUrl}}"], "path": ["registrar", ":id"] }
+          }
+        },
+        {
+          "name": "Update Registrar Info",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"school_id\": \"1001\",\n  \"name\": \"Registrar Name\",\n  \"address\": \"Address\",\n  \"email_address\": \"email@example.com\",\n  \"position\": \"Registrar\"\n}" },
+            "url": { "raw": "{{baseUrl}}/registrar/:id/info", "host": ["{{baseUrl}}"], "path": ["registrar", ":id", "info"] }
+          }
+        },
+        {
+          "name": "Delete Registrar",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"1\"\n}" },
+            "url": { "raw": "{{baseUrl}}/registrar/delreg", "host": ["{{baseUrl}}"], "path": ["registrar", "delreg"] }
+          }
+        },
+        {
+          "name": "Update Registrar Username",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"newusername\"\n}" },
+            "url": { "raw": "{{baseUrl}}/registrar/:id/username", "host": ["{{baseUrl}}"], "path": ["registrar", ":id", "username"] }
+          }
+        },
+        {
+          "name": "Update Registrar Password",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"password\": \"newpassword\"\n}" },
+            "url": { "raw": "{{baseUrl}}/registrar/:id/password", "host": ["{{baseUrl}}"], "path": ["registrar", ":id", "password"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Student",
+      "item": [
+        {
+          "name": "Student Login",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"student1\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{baseUrl}}/student/login", "host": ["{{baseUrl}}"], "path": ["student", "login"] }
+          }
+        },
+        {
+          "name": "Create New Student",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"school_id\": \"2001\",\n  \"name\": \"Student Name\",\n  \"course\": \"Course\",\n  \"address\": \"Address\",\n  \"email_address\": \"student@example.com\",\n  \"username\": \"student1\",\n  \"password\": \"password\"\n}" },
+            "url": { "raw": "{{baseUrl}}/student/newstud", "host": ["{{baseUrl}}"], "path": ["student", "newstud"] }
+          }
+        },
+        {
+          "name": "Get All Students",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "url": { "raw": "{{baseUrl}}/student/allstud", "host": ["{{baseUrl}}"], "path": ["student", "allstud"] }
+          }
+        },
+        {
+          "name": "Get Student by ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "url": { "raw": "{{baseUrl}}/student/:id", "host": ["{{baseUrl}}"], "path": ["student", ":id"] }
+          }
+        },
+        {
+          "name": "Update Student Info",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"school_id\": \"2001\",\n  \"name\": \"Student Name\",\n  \"address\": \"Address\",\n  \"email_address\": \"student@example.com\",\n  \"course\": \"Course\"\n}" },
+            "url": { "raw": "{{baseUrl}}/student/:id/info", "host": ["{{baseUrl}}"], "path": ["student", ":id", "info"] }
+          }
+        },
+        {
+          "name": "Delete Student",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"1\"\n}" },
+            "url": { "raw": "{{baseUrl}}/student/delstud", "host": ["{{baseUrl}}"], "path": ["student", "delstud"] }
+          }
+        },
+        {
+          "name": "Update Student Username",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"newusername\"\n}" },
+            "url": { "raw": "{{baseUrl}}/student/:id/username", "host": ["{{baseUrl}}"], "path": ["student", ":id", "username"] }
+          }
+        },
+        {
+          "name": "Update Student Password",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"password\": \"newpassword\"\n}" },
+            "url": { "raw": "{{baseUrl}}/student/:id/password", "host": ["{{baseUrl}}"], "path": ["student", ":id", "password"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Subject & Grades",
+      "item": [
+        {
+          "name": "Create New Subject",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"subject_code\": \"SUBJ101\",\n  \"subject_name\": \"Subject Name\",\n  \"subject_units\": 3,\n  \"subject_course\": \"Course\",\n  \"subject_studentyear\": 1,\n  \"subject_studentsemester\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/subject/newsub", "host": ["{{baseUrl}}"], "path": ["subject", "newsub"] }
+          }
+        },
+        {
+          "name": "Get All Subjects",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "url": { "raw": "{{baseUrl}}/subject/allsub", "host": ["{{baseUrl}}"], "path": ["subject", "allsub"] }
+          }
+        },
+        {
+          "name": "Get Subject by ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "url": { "raw": "{{baseUrl}}/subject/:id", "host": ["{{baseUrl}}"], "path": ["subject", ":id"] }
+          }
+        },
+        {
+          "name": "Update Subject Info",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"subject_code\": \"SUBJ101\",\n  \"subject_name\": \"Subject Name\",\n  \"subject_units\": 3,\n  \"subject_course\": \"Course\",\n  \"subject_studentyear\": 1,\n  \"subject_studentsemester\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/subject/:id", "host": ["{{baseUrl}}"], "path": ["subject", ":id"] }
+          }
+        },
+        {
+          "name": "Delete Subject",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"1\"\n}" },
+            "url": { "raw": "{{baseUrl}}/subject/delsub", "host": ["{{baseUrl}}"], "path": ["subject", "delsub"] }
+          }
+        },
+        {
+          "name": "Add Student Grades",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"student_id\": \"1\",\n  \"subject_id\": \"1\",\n  \"subject_grades\": 95\n}" },
+            "url": { "raw": "{{baseUrl}}/subject/addstudgrades", "host": ["{{baseUrl}}"], "path": ["subject", "addstudgrades"] }
+          }
+        },
+        {
+          "name": "Update Student Grades",
+          "request": {
+            "method": "PATCH",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"student_id\": \"1\",\n  \"subject_id\": \"1\",\n  \"subject_grades\": 98\n}" },
+            "url": { "raw": "{{baseUrl}}/subject/updatestudgrades", "host": ["{{baseUrl}}"], "path": ["subject", "updatestudgrades"] }
+          }
+        },
+        {
+          "name": "Delete Student Grades",
+          "request": {
+            "method": "DELETE",
+            "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"student_id\": \"1\",\n  \"grade_ids\": [1,2]\n}" },
+            "url": { "raw": "{{baseUrl}}/subject/delstudgrades", "host": ["{{baseUrl}}"], "path": ["subject", "delstudgrades"] }
+          }
+        },
+        {
+          "name": "View Student Grades by Student ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "x-api-key", "value": "{{apiKey}}" } ],
+            "url": { "raw": "{{baseUrl}}/subject/studgrades/:studentId", "host": ["{{baseUrl}}"], "path": ["subject", "studgrades", ":studentId"] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "apiKey", "value": "<your-api-key-here>" }
+  ]
+}

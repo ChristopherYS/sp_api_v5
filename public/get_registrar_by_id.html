@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Get Registrar by ID</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.datatables.net/2.3.1/css/dataTables.dataTables.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .button-container {
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+      }
+      .table-container {
+        margin-top: 2rem;
+      }
+      .alert {
+        display: none;
+        margin-top: 1rem;
+      }
+      .select-container {
+        margin-bottom: 2rem;
+      }
+      .select2-container {
+        width: 100% !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <br />
+      <h2 class="text-center mb-4">Get Registrar by ID</h2>
+
+      <div class="select-container">
+        <label for="registrarSelect" class="form-label"
+          >Select Registrar:</label
+        >
+        <select class="form-select" id="registrarSelect">
+          <option value="">Choose a registrar...</option>
+        </select>
+      </div>
+
+      <div class="button-container">
+        <button class="btn btn-primary" onclick="getRegistrarById()">
+          Get Registrar Info
+        </button>
+        <a href="index.html" class="btn btn-secondary">Back To Home</a>
+      </div>
+
+      <div id="errorAlert" class="alert alert-danger" role="alert">
+        Failed to fetch registrar information. Please try again.
+      </div>
+
+      <div class="table-container">
+        <table id="myTable" class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>School ID</th>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Email Address</th>
+              <th>Position</th>
+            </tr>
+          </thead>
+          <tbody id="registrarTableBody">
+            <!-- populated data -->
+          </tbody>
+        </table>
+      </div>
+      <br />
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/2.3.1/js/dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="config.js"></script>
+    <script>
+      let table;
+
+      // Initialize Select2 for registrar dropdown
+      $(document).ready(function () {
+        $("#registrarSelect").select2({
+          theme: "bootstrap-5",
+          placeholder: "Search for a registrar...",
+          allowClear: true,
+          width: "100%",
+        });
+      });
+
+      // Load registrars into select dropdown when page loads
+      window.onload = async function () {
+        try {
+          console.log("Fetching all registrars...");
+          const response = await fetch(
+            `${config.getBaseUrl()}/registrar/allreg`,
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                Accept: "application/json",
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch registrars: ${response.status} ${response.statusText}`
+            );
+          }
+
+          const registrars = await response.json();
+          const select = $("#registrarSelect");
+
+          // Sort registrars by name
+          registrars.sort((a, b) => a.name.localeCompare(b.name));
+
+          registrars.forEach((registrar) => {
+            const option = new Option(
+              `${registrar.name} (${registrar.school_id})`,
+              registrar.id,
+              false,
+              false
+            );
+            select.append(option);
+          });
+
+          select.trigger("change");
+        } catch (error) {
+          console.error("Error loading registrars:", error);
+          const errorAlert = document.getElementById("errorAlert");
+          errorAlert.textContent = `Failed to load registrar list: ${error.message}. Please refresh the page.`;
+          errorAlert.style.display = "block";
+        }
+      };
+
+      async function getRegistrarById() {
+        const registrarId = document.getElementById("registrarSelect").value;
+        const errorAlert = document.getElementById("errorAlert");
+        const tableBody = document.getElementById("registrarTableBody");
+
+        if (!registrarId) {
+          errorAlert.textContent = "Please select a registrar.";
+          errorAlert.style.display = "block";
+          tableBody.innerHTML = "";
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `${config.getBaseUrl()}/registrar/${registrarId}`,
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                Accept: "application/json",
+              },
+            }
+          );
+
+          if (response.status === 404) {
+            errorAlert.textContent = "Registrar not found.";
+            errorAlert.style.display = "block";
+            tableBody.innerHTML = "";
+            return;
+          }
+
+          if (!response.ok) {
+            throw new Error(`Failed to get registrar: ${response.status} ${response.statusText}`);
+          }
+
+          const data = await response.json();
+
+          // Display registrar information in the table.
+          tableBody.innerHTML = `
+            <tr>
+              <td>${data.id ?? ''}</td>
+              <td>${data.school_id ?? ''}</td>
+              <td>${data.name ?? ''}</td>
+              <td>${data.address ?? ''}</td>
+              <td>${data.email_address ?? ''}</td>
+              <td>${data.position ?? ''}</td>
+            </tr>
+          `;
+          errorAlert.style.display = "none";
+        } catch (error) {
+          errorAlert.textContent =
+            error.message || "Failed to get registrar details. Please try again.";
+          errorAlert.style.display = "block";
+          tableBody.innerHTML = "";
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Profile API</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .method-post {
+        background-color: #ffd700;
+      }
+      .method-get {
+        background-color: #90ee90;
+      }
+      .method-put {
+        background-color: #87ceeb;
+      }
+      .method-patch {
+        background-color: #d8bfd8;
+      }
+      .method-delete {
+        background-color: #ffb6c1;
+      }
+    </style>
+  </head>
+  <body class="bg-light">
+    <div class="container py-5">
+      <h1 class="text-center mb-5">Student Profile API</h1>
+
+      <!-- POST Endpoints -->
+      <h2 class="mb-4">POST Endpoints</h2>
+      <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-post"
+            onclick="window.location.href='newstud.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Create New Student</h5>
+              <p class="card-text">/student/newstud</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-post"
+            onclick="window.location.href='student_login.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Student Login</h5>
+              <p class="card-text">/student/login</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-post"
+            onclick="window.location.href='registrar_login.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Registrar Login</h5>
+              <p class="card-text">/registrar/login</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-post"
+            onclick="window.location.href='newreg.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Create New Registrar</h5>
+              <p class="card-text">/registrar/newreg</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-post"
+            onclick="window.location.href='newsub.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Create New Subject</h5>
+              <p class="card-text">/subject/newsub</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-post"
+            onclick="window.location.href='newgrade.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Add Student Grades</h5>
+              <p class="card-text">/subject/addstudgrades</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET Endpoints -->
+      <h2 class="mb-4">GET Endpoints</h2>
+      <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-get"
+            onclick="window.location.href='all_students.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Get All Students</h5>
+              <p class="card-text">/student/allstud</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-get"
+            onclick="window.location.href='get_student_by_id.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Get Student by ID</h5>
+              <p class="card-text">/student/:id</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-get"
+            onclick="window.location.href='get_registrar_by_id.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Get Registrar by ID</h5>
+              <p class="card-text">/registrar/:id</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-get"
+            onclick="window.location.href='all_subjects.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Get All Subjects</h5>
+              <p class="card-text">/subject/allsub</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-get"
+            onclick="window.location.href='get_subject_by_id.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Get Subject by ID</h5>
+              <p class="card-text">/subject/:id</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-get"
+            onclick="window.location.href='view_student_grades.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">View Student Grades</h5>
+              <p class="card-text">/subject/studgrades/:studentId</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PUT Endpoints -->
+      <h2 class="mb-4">PUT Endpoints</h2>
+      <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-put"
+            onclick="window.location.href='update_student_info.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Update Student Info</h5>
+              <p class="card-text">/student/:id/info</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-put"
+            onclick="window.location.href='update_student_username.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Update Student Username</h5>
+              <p class="card-text">/student/:id/username</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-put"
+            onclick="window.location.href='update_student_password.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Update Student Password</h5>
+              <p class="card-text">/student/:id/password</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-put"
+            onclick="window.location.href='update_registrar_info.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Update Registrar Info</h5>
+              <p class="card-text">/registrar/:id/info</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-put"
+            onclick="window.location.href='update_registrar_username.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Update Registrar Username</h5>
+              <p class="card-text">/registrar/:id/username</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-put"
+            onclick="window.location.href='update_registrar_password.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Update Registrar Password</h5>
+              <p class="card-text">/registrar/:id/password</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-put"
+            onclick="window.location.href='update_subject_info.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Update Subject Info</h5>
+              <p class="card-text">/subject/:id</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATCH Endpoints -->
+      <h2 class="mb-4">PATCH Endpoints</h2>
+      <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-patch"
+            onclick="window.location.href='update_student_grades.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Update Student Grades</h5>
+              <p class="card-text">/subject/updatestudgrades</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DELETE Endpoints -->
+      <h2 class="mb-4">DELETE Endpoints</h2>
+      <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-delete"
+            onclick="window.location.href='delete_student.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Delete Student</h5>
+              <p class="card-text">/student/delstud</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-delete"
+            onclick="window.location.href='delete_registrar.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Delete Registrar</h5>
+              <p class="card-text">/registrar/delreg</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-delete"
+            onclick="window.location.href='delete_subject.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Delete Subject</h5>
+              <p class="card-text">/subject/delsub</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div
+            class="card endpoint-card method-delete"
+            onclick="window.location.href='delete_student_grades.html'"
+          >
+            <div class="card-body">
+              <h5 class="card-title">Delete Student Grades</h5>
+              <p class="card-text">/subject/delstudgrades</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

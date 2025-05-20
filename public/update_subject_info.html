@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update Subject Information</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .button-container {
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+      }
+      .form-container {
+        margin-top: 2rem;
+      }
+      .alert {
+        display: none;
+        margin-top: 1rem;
+      }
+      .select-container {
+        margin-bottom: 2rem;
+      }
+      .select2-container {
+        width: 100% !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <br />
+      <h2 class="text-center mb-4">Update Subject Information</h2>
+
+      <div class="select-container">
+        <label for="subjectSelect" class="form-label">Select Subject:</label>
+        <select class="form-select" id="subjectSelect">
+          <option value="">Choose a subject...</option>
+        </select>
+      </div>
+
+      <div class="form-container">
+        <form id="updateForm" onsubmit="return updateSubjectInfo(event)">
+          <div class="mb-3">
+            <label for="subjectCode" class="form-label">Subject Code:</label>
+            <input type="text" class="form-control" id="subjectCode" required />
+          </div>
+          <div class="mb-3">
+            <label for="subjectName" class="form-label">Subject Name:</label>
+            <input type="text" class="form-control" id="subjectName" required />
+          </div>
+          <div class="mb-3">
+            <label for="subjectUnits" class="form-label">Subject Units:</label>
+            <input
+              type="number"
+              class="form-control"
+              id="subjectUnits"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="subjectCourse" class="form-label"
+              >Subject Course:</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="subjectCourse"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="subjectStudentYear" class="form-label"
+              >Student Year:</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="subjectStudentYear"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="subjectStudentSemester" class="form-label"
+              >Student Semester:</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="subjectStudentSemester"
+              required
+            />
+          </div>
+          <div class="button-container d-grid gap-2">
+            <button
+              type="submit"
+              class="btn btn-primary"
+            >
+              Update Information
+            </button>
+            <a href="index.html" class="btn btn-secondary">Back To Home</a>
+          </div>
+          <div id="errorAlert" class="alert alert-danger mt-3" role="alert">
+            Failed to update subject information. Please try again.
+          </div>
+          <div id="successAlert" class="alert alert-success mt-3" role="alert">
+            Subject information updated successfully!
+          </div>
+        </form>
+      </div>
+      <br />
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="config.js"></script>
+    <script>
+      // Store loaded subjects globally
+      window._subjectsList = [];
+    </script>
+    <script>
+      // Initialize Select2 for subject dropdown
+      $(document).ready(function () {
+        $("#subjectSelect").select2({
+          theme: "bootstrap-5",
+          placeholder: "Search for a subject...",
+          allowClear: true,
+          width: "100%",
+        });
+      });
+
+      // Populate form fields when a subject is selected
+      $("#subjectSelect").on("change", function () {
+        const subjectId = $(this).val();
+        const subjects = window._subjectsList || [];
+        if (!subjectId) {
+          document.getElementById("updateForm").reset();
+          return;
+        }
+        // Find the selected subject's data from the loaded list
+        var subject = null;
+        for (var i = 0; i < subjects.length; i++) {
+          if (String(subjects[i].id) === String(subjectId)) {
+            subject = subjects[i];
+            break;
+          }
+        }
+        if (subject) {
+          document.getElementById("subjectCode").value = subject.subject_code || "";
+          document.getElementById("subjectName").value = subject.subject_name || "";
+          document.getElementById("subjectUnits").value = subject.subject_units || "";
+          document.getElementById("subjectCourse").value = subject.subject_course || "";
+          document.getElementById("subjectStudentYear").value = subject.subject_studentyear || "";
+          document.getElementById("subjectStudentSemester").value = subject.subject_studentsemester || "";
+        }
+      });
+
+      // Load subjects into select dropdown when page loads
+      window.onload = async function () {
+        try {
+          console.log("Fetching all subjects...");
+          const response = await fetch(
+            `${config.getBaseUrl()}/subject/allsub`,
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                Accept: "application/json",
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch subjects: ${response.status} ${response.statusText}`
+            );
+          }
+
+          const subjects = await response.json();
+          const select = $("#subjectSelect");
+
+          // Sort subjects by name
+          subjects.sort((a, b) => a.subject_name.localeCompare(b.subject_name));
+
+          // Store subjects globally for change event access
+          window._subjectsList = subjects;
+
+          subjects.forEach((subject) => {
+            const option = new Option(
+              `${subject.subject_name} (${subject.subject_code})`,
+              subject.id,
+              false,
+              false
+            );
+            select.append(option);
+          });
+
+          select.trigger("change");
+        } catch (error) {
+          console.error("Error loading subjects:", error);
+          const errorAlert = document.getElementById("errorAlert");
+          errorAlert.textContent = `Failed to load subject list: ${error.message}. Please refresh the page.`;
+          errorAlert.style.display = "block";
+        }
+      };
+
+      async function updateSubjectInfo(event) {
+        event.preventDefault();
+        const subjectId = document.getElementById("subjectSelect").value;
+        const subjectName = document.getElementById("subjectName").value;
+        const subjectCode = document.getElementById("subjectCode").value;
+        const subjectUnits = document.getElementById("subjectUnits").value;
+        const subjectCourse = document.getElementById("subjectCourse").value;
+        const subjectStudentYear = document.getElementById("subjectStudentYear").value;
+        const subjectStudentSemester = document.getElementById("subjectStudentSemester").value;
+        const errorAlert = document.getElementById("errorAlert");
+        const successAlert = document.getElementById("successAlert");
+
+        if (!subjectId) {
+          errorAlert.textContent = "Please select a subject.";
+          errorAlert.style.display = "block";
+          return;
+        }
+
+        if (!subjectName) {
+          errorAlert.textContent = "Please enter a subject name.";
+          errorAlert.style.display = "block";
+          return;
+        }
+
+        if (!subjectCode) {
+          errorAlert.textContent = "Please enter a subject code.";
+          errorAlert.style.display = "block";
+          return;
+        }
+
+        if (!subjectUnits) {
+          errorAlert.textContent = "Please enter subject units.";
+          errorAlert.style.display = "block";
+          return;
+        }
+
+        if (!subjectCourse) {
+          errorAlert.textContent = "Please enter subject course.";
+          errorAlert.style.display = "block";
+          return;
+        }
+
+        if (!subjectStudentYear) {
+          errorAlert.textContent = "Please enter student year.";
+          errorAlert.style.display = "block";
+          return;
+        }
+
+        if (!subjectStudentSemester) {
+          errorAlert.textContent = "Please enter student semester.";
+          errorAlert.style.display = "block";
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `${config.getBaseUrl()}/subject/${subjectId}`,
+            {
+              method: "PUT",
+              credentials: "include",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                subject_name: subjectName,
+                subject_code: subjectCode,
+                subject_units: subjectUnits,
+                subject_course: subjectCourse,
+                subject_studentyear: subjectStudentYear,
+                subject_studentsemester: subjectStudentSemester,
+              }),
+            }
+          );
+
+          let data;
+          let responseText = await response.text();
+          try {
+            data = JSON.parse(responseText);
+          } catch {
+            data = { error: responseText };
+          }
+
+          if (response.ok) {
+            errorAlert.style.display = "none";
+            successAlert.style.display = "block";
+            // Reset the form
+            document.getElementById("updateForm").reset();
+            $("#subjectSelect").val("").trigger("change");
+          } else {
+            const errorMessage =
+              data.message ||
+              data.error ||
+              `Server returned ${response.status}: ${response.statusText}`;
+            errorAlert.textContent = errorMessage;
+            errorAlert.style.display = "block";
+            successAlert.style.display = "none";
+          }
+        } catch (error) {
+          errorAlert.textContent =
+            error.message || "Failed to update subject info. Please try again.";
+          errorAlert.style.display = "block";
+          successAlert.style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Login</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .alert {
+        display: none;
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="form-container">
+        <h2 class="text-center mb-4">Student Login</h2>
+        <form id="loginForm" onsubmit="return handleSubmit(event)">
+          <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input
+              type="text"
+              class="form-control"
+              id="username"
+              name="username"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              required
+            />
+          </div>
+          <br />
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary">Login</button>
+            <a href="index.html" class="btn btn-secondary">Back to Home</a>
+          </div>
+        </form>
+        <div id="successAlert" class="alert alert-success" role="alert">
+          Login successful!
+        </div>
+        <div id="errorAlert" class="alert alert-danger" role="alert">
+          Login failed. Please check your credentials.
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="config.js"></script>
+    <script>
+      // Handles both form submit and GET query param login for browser testing
+      async function handleSubmit(event) {
+        if (event) event.preventDefault();
+        const errorAlert = document.getElementById("errorAlert");
+        const successAlert = document.getElementById("successAlert");
+
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        await loginWithCredentials(username, password, successAlert, errorAlert);
+      }
+
+      async function loginWithCredentials(username, password, successAlert, errorAlert) {
+        try {
+          const response = await fetch(`${config.getBaseUrl()}/student/login`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              username: username,
+              password: password,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Login failed: ${response.status} ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          successAlert.textContent = "Login successful!";
+          successAlert.style.display = "block";
+          errorAlert.style.display = "none";
+
+        } catch (error) {
+          console.error("Login error:", error);
+          errorAlert.textContent = `Login failed: ${error.message}`;
+          errorAlert.style.display = "block";
+          successAlert.style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>
